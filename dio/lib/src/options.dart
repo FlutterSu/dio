@@ -53,6 +53,7 @@ class BaseOptions extends _RequestConfig {
     String method,
     this.connectTimeout,
     int receiveTimeout,
+    int byteTimeout,
     int sendTimeout,
     this.baseUrl,
     this.queryParameters,
@@ -69,6 +70,7 @@ class BaseOptions extends _RequestConfig {
   }) : super(
           method: method,
           receiveTimeout: receiveTimeout,
+          byteTimeout: byteTimeout,
           sendTimeout: sendTimeout,
           extra: extra,
           headers: headers,
@@ -90,6 +92,7 @@ class BaseOptions extends _RequestConfig {
     String path,
     int connectTimeout,
     int receiveTimeout,
+    int byteTimeout,
     int sendTimeout,
     Map<String, dynamic> extra,
     Map<String, dynamic> headers,
@@ -108,6 +111,7 @@ class BaseOptions extends _RequestConfig {
       queryParameters: queryParameters ?? this.queryParameters,
       connectTimeout: connectTimeout ?? this.connectTimeout,
       receiveTimeout: receiveTimeout ?? this.receiveTimeout,
+      byteTimeout: byteTimeout ?? this.byteTimeout,
       sendTimeout: sendTimeout ?? this.sendTimeout,
       extra: extra ?? Map.from(this.extra ?? {}),
       headers: headers ?? Map.from(this.headers ?? {}),
@@ -141,6 +145,7 @@ class Options extends _RequestConfig {
     String method,
     int sendTimeout,
     int receiveTimeout,
+    int byteTimeout,
     Map<String, dynamic> extra,
     Map<String, dynamic> headers,
     ResponseType responseType,
@@ -155,6 +160,7 @@ class Options extends _RequestConfig {
           method: method,
           sendTimeout: sendTimeout,
           receiveTimeout: receiveTimeout,
+          byteTimeout: byteTimeout,
           extra: extra,
           headers: headers,
           responseType: responseType,
@@ -172,6 +178,7 @@ class Options extends _RequestConfig {
     String method,
     int sendTimeout,
     int receiveTimeout,
+    int byteTimeout,
     Map<String, dynamic> extra,
     Map<String, dynamic> headers,
     ResponseType responseType,
@@ -187,6 +194,7 @@ class Options extends _RequestConfig {
       method: method ?? this.method,
       sendTimeout: sendTimeout ?? this.sendTimeout,
       receiveTimeout: receiveTimeout ?? this.receiveTimeout,
+      byteTimeout: byteTimeout ?? this.byteTimeout,
       extra: extra ?? Map.from(this.extra ?? {}),
       headers: headers ?? Map.from(this.headers ?? {}),
       responseType: responseType ?? this.responseType,
@@ -207,6 +215,7 @@ class RequestOptions extends Options {
     String method,
     int sendTimeout,
     int receiveTimeout,
+    int byteTimeout,
     this.connectTimeout,
     this.data,
     this.path,
@@ -229,6 +238,7 @@ class RequestOptions extends Options {
           method: method,
           sendTimeout: sendTimeout,
           receiveTimeout: receiveTimeout,
+          byteTimeout: byteTimeout,
           extra: extra,
           headers: headers,
           responseType: responseType,
@@ -247,6 +257,7 @@ class RequestOptions extends Options {
     String method,
     int sendTimeout,
     int receiveTimeout,
+    int byteTimeout,
     int connectTimeout,
     String data,
     String path,
@@ -270,6 +281,7 @@ class RequestOptions extends Options {
       method: method ?? this.method,
       sendTimeout: sendTimeout ?? this.sendTimeout,
       receiveTimeout: receiveTimeout ?? this.receiveTimeout,
+      byteTimeout: byteTimeout ?? this.byteTimeout,
       connectTimeout: connectTimeout ?? this.connectTimeout,
       data: data ?? this.data,
       path: path ?? this.path,
@@ -335,6 +347,7 @@ class _RequestConfig {
   _RequestConfig({
     this.method,
     this.receiveTimeout,
+    this.byteTimeout,
     this.sendTimeout,
     Map<String, dynamic> extra,
     Map<String, dynamic> headers,
@@ -374,6 +387,12 @@ class _RequestConfig {
   ///
   /// [0] meanings no timeout limit.
   int receiveTimeout;
+
+
+  ///  Timeout in milliseconds for byte sending data.
+  ///  [Dio] will throw the [DioError] with [DioErrorType.BYTE_TIMEOUT] type
+  ///  when time out.
+  int byteTimeout;
 
   /// The request Content-Type. The default value is [ContentType.json].
   /// If you want to encode request body with 'application/x-www-form-urlencoded',

@@ -1083,6 +1083,7 @@ abstract class DioMixin implements Dio {
       connectTimeout: optConnectTimeout ?? options.connectTimeout ?? 0,
       sendTimeout: opt.sendTimeout ?? options.sendTimeout ?? 0,
       receiveTimeout: opt.receiveTimeout ?? options.receiveTimeout ?? 0,
+      byteTimeout: opt.byteTimeout ?? options.byteTimeout ?? 0,
       responseType:
           opt.responseType ?? options.responseType ?? ResponseType.json,
       extra: (Map.from(options.extra))..addAll(opt.extra),

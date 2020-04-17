@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:async/async.dart';
 import 'dart:io';
 import '../adapter.dart';
 import '../cancel_token.dart';
@@ -125,6 +126,7 @@ class DioForNative with DioMixin implements Dio {
     //Create a Completer to notify the success/error state.
     var completer = Completer<Response>();
     var future = completer.future;
+    CancelableOperation futureByteTimeout;
     var received = 0;
 
     // Stream<Uint8List>
@@ -158,6 +160,24 @@ class DioForNative with DioMixin implements Dio {
         subscription.pause();
         // Write file asynchronously
         asyncWrite = raf.writeFrom(data).then((_raf) {
+          if (response.request.byteTimeout > 0) {
+            futureByteTimeout?.cancel();
+            futureByteTimeout = CancelableOperation.fromFuture(Future
+                .delayed(Duration(milliseconds: response.request.byteTimeout))
+            ).then((_) async {
+              try {
+                await subscription.cancel();
+                await _closeAndDelete();
+              } finally {
+                completer.completeError(DioError(
+                  request: response.request,
+                  error:
+                  'Timeout byte sending data[${response.request.byteTimeout}ms]',
+                  type: DioErrorType.BYTE_TIMEOUT,
+                ));
+              }
+            });
+          }
           // Notify progress
           received += data.length;
           if (onReceiveProgress != null) {
@@ -169,6 +189,7 @@ class DioForNative with DioMixin implements Dio {
           }
         }).catchError((err) async {
           try {
+            await futureByteTimeout?.cancel();
             await subscription.cancel();
           } finally {
             completer.completeError(assureDioError(err));
@@ -177,6 +198,7 @@ class DioForNative with DioMixin implements Dio {
       },
       onDone: () async {
         try {
+          await futureByteTimeout?.cancel();
           await asyncWrite;
           closed = true;
           await raf.close();
@@ -187,6 +209,7 @@ class DioForNative with DioMixin implements Dio {
       },
       onError: (e) async {
         try {
+          await futureByteTimeout?.cancel();
           await _closeAndDelete();
         } finally {
           completer.completeError(assureDioError(e));

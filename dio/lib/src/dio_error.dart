@@ -11,6 +11,9 @@ enum DioErrorType {
   ///It occurs when receiving timeout.
   RECEIVE_TIMEOUT,
 
+  ///It occurs when receiving timeout.
+  BYTE_TIMEOUT,
+
   /// When the server response, but with a incorrect status, such as 404, 503...
   RESPONSE,
 
